@@ -1,0 +1,405 @@
+<?php
+// -------------------------------------------------------
+// Important thing for allow load Codeigniter from outside
+include('bootstrap.php');
+// -------------------------------------------------------
+class Update_cryptocurrency extends MY_Controller {
+	public $is_editor = FALSE;
+	public $error = FALSE, $error_msg = array();
+	protected $DateObject;
+	protected $email_vendor;
+	protected $base_dashboard, $base_cryptocurrency = array();
+	protected $CI;
+	protected $insert_to_enabled_data_params = array();
+	function __construct() {
+		parent::__construct();
+		$this->CI = &get_instance();
+		$this->CI->load->helper('dashboard/dashboard_functions');
+		$this->CI->load->config('dashboard/base_dashboard');
+		$this->CI->base_dashboard = $this->config->item('base_dashboard');
+		$this->CI->email_vendor = (isset($this->base_dashboard['email_vendor']) ? $this->base_dashboard['email_vendor'] : '');
+		$this->CI->load->library('dashboard/Lib_authentication', $this->base_dashboard, 'authentication');
+		$this->CI->load->model('dashboard/Model_account', 'mod_account');
+		$this->CI->DateObject = $this->authentication->create_dateobject(ConstantConfig::$timezone, 'Y-m-d H:i:s', date('Y-m-d H:i:s'));
+		if (($this->CI->authentication->localdata != FALSE)) {
+			if (in_array((int)$this->authentication->localdata['account_role'], base_config('editor_role'))) {
+				$this->CI->is_editor = TRUE;
+			}
+		}
+		# Load cryptocurrency config
+		$this->CI->load->config('cryptocurrency/base_cryptocurrency');
+		$this->CI->base_cryptocurrency = $this->config->item('base_cryptocurrency');
+		# Load Models
+		$this->CI->load->model('cryptocurrency/Model_currencies', 'mod_currency');
+		$this->CI->load->model('cryptocurrency/Model_exchange', 'mod_exchange');
+		$this->CI->load->model('cryptocurrency/Model_ticker', 'mod_ticker');
+	}
+	
+	
+	//======================================================================
+	// Cryptocurrency Actions
+	function update_cryptocurrency_ticker($market_seq = 0) {
+		$collectData = array(
+			'page'					=> 'cryptocurrency-add-email',
+			'title'					=> 'Cryptocurrency Bank',
+			'collect'				=> array(),
+			'market_seq'			=> (is_numeric($market_seq) ? (int)$market_seq : 0),
+		);
+		//================================================================
+		if ($this->authentication->localdata) {
+			$collectData['collect']['ggdata'] = $this->authentication->userdata;
+			$collectData['collect']['userdata'] = $this->authentication->localdata;
+			$collectData['collect']['roles'] = $this->mod_account->get_dashboard_roles();
+			$collectData['collect']['match'] = $this->authentication->get_altorouter_match();
+		}
+		/*
+		if (!$this->is_editor) {
+			$this->error = true;
+			$this->error_msg[] = "You are prohibited to access page, need editor privileges.";
+			$this->accessDenied($collectData);
+		}
+		*/
+		//=================================
+		if (!$this->error) {
+			try {
+				$collectData['market_data'] = $this->mod_currency->get_marketplace_data_by('market', $collectData['market_seq'], 1);
+			} catch (Exception $ex) {
+				$this->error = true;
+				$this->error_msg[] = "Error exception while get marketplace data of market-seq.";
+			}
+		}
+		if (!$this->error) {
+			if (!isset($collectData['market_data']->seq)) {
+				$this->error = true;
+				$this->error_msg[] = "Market data return empty data.";
+			} else {
+				if (strtoupper($collectData['market_data']->market_is_enabled) !== 'Y') {
+					$this->error = true;
+					$this->error_msg[] = "Market data is not enabled (not active).";
+				} else {
+					try {
+						$collectData['tickers'] = $this->mod_currency->get_marketplace_tickers($collectData['market_data']);
+					} catch (Exception $ex) {
+						$this->error = true;
+						$this->error_msg[] = "Cannot get all tickers on marketplace: {$ex->getMessage()}";
+					}
+				}
+			}
+		}
+		if (!$this->error) {
+			$collectData['collect']['tickers'] = array();
+			if (is_array($collectData['tickers']) && (count($collectData['tickers']) > 0)) {
+				foreach ($collectData['tickers'] as $keval) {
+					$currency = array(
+						'from'		=> $keval->ticker_currency_from,
+						'to'		=> $keval->ticker_currency_to,
+					);
+					try {
+						$collectData['collect']['tickers'][$keval->seq] = $this->mod_currency->get_marketplace_ticker_data($keval->market_seq, $currency);
+						if (!isset($collectData['collect']['tickers'][$keval->seq]['data'])) {
+							$collectData['collect']['tickers'][$keval->seq]['data'] = $keval;
+						}
+					} catch (Exception $ex) {
+						$this->error = true;
+						$this->error_msg[] = "Error exception get ticker data market from and to: {$ex->getMessage()}.";
+					}
+				}
+			}
+		}
+		if (!$this->error) {
+			$collectData['ticker_imploded_array'] = array();
+			if (count($collectData['collect']['tickers']) > 0) {
+				foreach ($collectData['collect']['tickers'] as $tickerKey => $tickerVal) {
+					switch (strtolower($collectData['market_data']->market_api_string)) {
+						case 'uppercase':
+							$collectData['ticker_imploded_array'] = array(
+								strtoupper($tickerVal['from']->currency_market_code),
+								strtoupper($tickerVal['to']->currency_market_code),
+							);
+						break;
+						case 'lowercase':
+						default:
+							$collectData['ticker_imploded_array'] = array(
+								strtolower($tickerVal['from']->currency_market_code),
+								strtolower($tickerVal['to']->currency_market_code),
+							);
+						break;
+					}
+					$collectData['collect']['tickers'][$tickerKey]['ticker_imploded'] = implode($collectData['market_data']->market_api_implode, $collectData['ticker_imploded_array']);
+					$collectData['collect']['tickers'][$tickerKey]['api_response'] = $this->mod_currency->get_ticker_from_marketplace_api($collectData['market_data']->seq, $collectData['collect']['tickers'][$tickerKey]['ticker_imploded']);
+				}
+			}
+		}
+		if (!$this->error) {
+			$collectData['ticker_api_amount'] = '0';
+			switch (strtolower($collectData['market_data']->market_code)) {
+				case 'bitcoin_id':
+					$market_price_index = $collectData['market_data']->market_price_index;
+					if (count($collectData['collect']['tickers']) > 0) {
+						foreach ($collectData['collect']['tickers'] as $tickerKey => $tickerVal) {
+							if (isset($tickerVal['api_response']['ticker'][$market_price_index])) {
+								$collectData['ticker_api_amount'] = sprintf('%s', $tickerVal['api_response']['ticker'][$market_price_index]);
+							}
+							// === Insert to Database
+							$affected_seq_insert_ticker_data = $this->mod_currency->insert_ticker_amount_by_tickerseq($tickerVal['data']->seq, $collectData['ticker_api_amount']);
+						}
+					}
+				break;
+				case 'kraken':
+				default:
+					if (count($collectData['collect']['tickers']) > 0) {
+						foreach ($collectData['collect']['tickers'] as $tickerKey => $tickerVal) {
+							$ticker_imploded = (isset($tickerVal['ticker_imploded']) ? $tickerVal['ticker_imploded'] : '');
+							if (isset($tickerVal['api_response']['result'][$ticker_imploded]['a'][0])) {
+								$collectData['ticker_api_amount'] = sprintf('%s', $tickerVal['api_response']['result'][$ticker_imploded]['a'][0]);
+							}
+							// === Insert to Database
+							$affected_seq_insert_ticker_data = $this->mod_currency->insert_ticker_amount_by_tickerseq($tickerVal['data']->seq, $collectData['ticker_api_amount']);
+						}
+					}
+				break;
+			}
+			
+		}
+		
+		if (!$this->error) {
+			//print_r($collectData);
+			echo "DONE\r\n";
+		} else {
+			print_r($this->error_msg);
+		}
+	}
+	
+	//============================
+	function update_enabled_data($ticker_seq = 1) {
+		$collectData = array(
+			'page'					=> 'cryptocurrency-ticker-insert-compared',
+			'title'					=> 'Real Currency Exchange',
+			'base_dashboard_path'	=> 'dashboard',
+			'collect'				=> array(),
+			'ticker_seq'			=> (is_numeric($ticker_seq) ? $ticker_seq : 0),
+		);
+		$collectData['search_text'] = (isset($this->imzcustom->php_input_request['body']['search_text']) ? $this->imzcustom->php_input_request['body']['search_text'] : '');
+		$collectData['search_text'] = (is_string($collectData['search_text']) || is_numeric($collectData['search_text'])) ? sprintf("%s", $collectData['search_text']) : '';
+		$collectData['search_text'] = base_safe_text($collectData['search_text'], 128);
+		//=================================
+		$collectData['input_date'] = (isset($this->imzcustom->php_input_request['body']['input_date']) ? $this->imzcustom->php_input_request['body']['input_date'] : '');
+		$collectData['input_date'] = (is_string($collectData['input_date']) ? strtolower($collectData['input_date']) : '');
+		try {
+			$collectData['input_date_object'] = date_create_from_format('Y-m-d', $collectData['input_date']);
+		} catch (Exception $ex) {
+			throw $ex;
+			$collectData['input_date_object'] = date_create_from_format('Y-m-d', date('Y-m-d'));
+		}
+		if ($collectData['input_date_object'] !== FALSE) {
+			$collectData['tickerdata_date'] = date_format($collectData['input_date_object'], 'Y-m-d');
+		} else {
+			$collectData['tickerdata_date'] = $this->CI->DateObject->format('Y-m-d');
+		}
+		$collectData['marketplace'] = $this->mod_currency->get_marketplace();
+		if (!$this->error) {
+			try {
+				$collectData['collect']['enabled_data'] = $this->mod_ticker->get_enabled_data_single_by('seq', $collectData['ticker_seq']);
+			} catch (Exception $ex) {
+				$this->error = true;
+				$this->error_msg[] = "Error exception while get data of enabled to view data.";
+			}
+		}
+		if (!$this->error) {
+			if (!isset($collectData['collect']['enabled_data']->seq)) {
+				$this->error = true;
+				$this->error_msg[] = "Enabled ticker comparison data not exists on database.";
+			} else {
+				try {
+					$collectData['ticker_data'] = array(
+						'from'		=> $this->mod_ticker->get_ticker_data_by('seq', $collectData['collect']['enabled_data']->cryptocurrency_compare_ticker_seq_from),
+						'to'		=> $this->mod_ticker->get_ticker_data_by('seq', $collectData['collect']['enabled_data']->cryptocurrency_compare_ticker_seq_to),
+					);
+				} catch (Exception $ex) {
+					$this->error = true;
+					$this->error_msg[] = "Cannot get ticker_data (from) and ticker_data (to) by seq: {$ex->getMessage()}";
+				}
+			}
+		}
+		if (!$this->error) {
+			if (!isset($collectData['ticker_data']['from']->seq)) {
+				$this->error = true;
+				$this->error_msg[] = "Ticker data (from) sequence not exists on database.";
+			}
+			if (!isset($collectData['ticker_data']['to']->seq)) {
+				$this->error = true;
+				$this->error_msg[] = "Ticker data (to) sequence not exists on database.";
+			}
+			try {
+				$collectData['all_tickers'] = $this->mod_currency->get_allmarketplace_tickers();
+			} catch (Exception $ex) {
+				$this->error = true;
+				$this->error_msg[] = "Cannot get all marketplace tickers with exception: {$ex->getMessage()}";
+			}
+		}
+		if (!$this->error) {
+			$collectData['today_exchange'] = $this->mod_exchange->get_today_exchange();
+			if (!isset($collectData['today_exchange']->seq)) {
+				$this->error = true;
+				$this->error_msg[] = "Not get today exchange amount.";
+			}
+		}
+		if (!$this->error) {
+			// SET Ticker Data Collections
+			//---- (From)
+			$collectData['collect']['ticker_data_collection'] = array();
+			try {
+				$collectData['collect']['ticker_data_collection']['from'] = $this->mod_ticker->get_ticker_data_collection_by($collectData['collect']['enabled_data']->cryptocurrency_compare_ticker_seq_from, $collectData['tickerdata_date'], $collectData['collect']['enabled_data']->cryptocurrency_compare_unit, $collectData['collect']['enabled_data']->cryptocurrency_compare_amount);
+			} catch (Exception $ex) {
+				$this->error = true;
+				$this->error_msg[] = "Error exception while get ticker data collection (from) with exception: {$ex->getMessage()}";
+			}
+		}
+		if (!$this->error) {
+			if (count($collectData['collect']['ticker_data_collection']['from']) > 0) {
+				foreach ($collectData['collect']['ticker_data_collection']['from'] as $FromKey => &$FromCollectVal) {
+					$FromCollectVal['exchange'] = array(
+						'min_amount'			=> round(sprintf("%.08f", ($FromCollectVal['result']->min_amount * $collectData['today_exchange']->exchange_amount_to)), 2, PHP_ROUND_HALF_ODD),
+						'max_amount'			=> round(sprintf("%.08f", ($FromCollectVal['result']->max_amount * $collectData['today_exchange']->exchange_amount_to)), 2, PHP_ROUND_HALF_ODD),
+						'avg_amount'			=> round(sprintf("%.08f", ($FromCollectVal['result']->avg_amount * $collectData['today_exchange']->exchange_amount_to)), 2, PHP_ROUND_HALF_ODD),
+					);
+					// Create Dateobject of Starting
+					$from_starting_dateobject = new DateTime($FromCollectVal['starting']);
+					if ($from_starting_dateobject !== FALSE) {
+						if ($from_starting_dateobject->format('Y-m-d H:i') < $this->CI->DateObject->format('Y-m-d H:i')) {
+							$from_stopping_dateobject = new DateTime($FromCollectVal['stopping']);
+							$this->insert_to_enabled_data_params[$FromKey] = array(
+								'enabled_seq'						=> $collectData['collect']['enabled_data']->seq,
+								'comparison_date'					=> $from_starting_dateobject->format('Y-m-d'),
+								'comparison_datetime_starting'		=> $from_starting_dateobject->format('Y-m-d H:i:s'),
+								'comparison_datetime_stopping'		=> $from_stopping_dateobject->format('Y-m-d H:i:s'),
+								'comparison_every_amount'			=> sprintf("%d", $collectData['collect']['enabled_data']->cryptocurrency_compare_amount),
+								'comparison_every_unit'				=> sprintf("%s", $collectData['collect']['enabled_data']->cryptocurrency_compare_unit),
+								'exchange_from_raw'					=> json_encode($FromCollectVal['result'], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+								'exchange_from_max'					=> $FromCollectVal['exchange']['max_amount'],
+								'today_comparison_currency'			=> $collectData['today_exchange']->exchange_amount_to,
+								'today_comparison_limit'			=> $collectData['collect']['enabled_data']->cryptocurrency_premium_limit,
+							);
+						}
+					}
+				}
+			}
+			//---- (To)
+			try {
+				$collectData['collect']['ticker_data_collection']['to'] = $this->mod_ticker->get_ticker_data_collection_by($collectData['collect']['enabled_data']->cryptocurrency_compare_ticker_seq_to, $collectData['tickerdata_date'], $collectData['collect']['enabled_data']->cryptocurrency_compare_unit, $collectData['collect']['enabled_data']->cryptocurrency_compare_amount);
+			} catch (Exception $ex) {
+				$this->error = true;
+				$this->error_msg[] = "Error exception while get ticker data collection (to) with exception: {$ex->getMessage()}";
+			}
+		}
+		if (!$this->error) {
+			if (count($collectData['collect']['ticker_data_collection']['to']) > 0) {
+				foreach ($collectData['collect']['ticker_data_collection']['to'] as $ToKey => &$ToCollectVal) {
+					$ToCollectVal['exchange'] = array(
+						'min_amount'			=> round(sprintf("%.08f", ($ToCollectVal['result']->min_amount * 1)), 2, PHP_ROUND_HALF_ODD),
+						'max_amount'			=> round(sprintf("%.08f", ($ToCollectVal['result']->max_amount * 1)), 2, PHP_ROUND_HALF_ODD),
+						'avg_amount'			=> round(sprintf("%.08f", ($ToCollectVal['result']->avg_amount * 1)), 2, PHP_ROUND_HALF_ODD),
+					);
+					// Create Dateobject of Starting
+					$to_starting_dateobject = new DateTime($ToCollectVal['starting']);
+					if ($to_starting_dateobject !== FALSE) {
+						if ($to_starting_dateobject->format('Y-m-d H:i') < $this->CI->DateObject->format('Y-m-d H:i')) {
+							$to_stopping_dateobject = new DateTime($ToCollectVal['stopping']);
+							$this->insert_to_enabled_data_params[$ToKey]['exchange_to_raw'] = json_encode($ToCollectVal['result'], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+							$this->insert_to_enabled_data_params[$ToKey]['exchange_to_max'] = $ToCollectVal['exchange']['max_amount'];
+						}
+					}
+				}
+			}
+		}
+		if (!$this->error) {
+			$collectData['insert_enabled_data_result'] = array();
+			if (is_array($this->insert_to_enabled_data_params)) {
+				if (count($this->insert_to_enabled_data_params) > 0) {
+					foreach ($this->insert_to_enabled_data_params as &$paramsVal) {
+						$paramsVal['comparison_after_exchange_result'] = $this->calculte_and_insert_to_enabled_data($paramsVal);
+						if ($paramsVal['comparison_after_exchange_result'] !== 0) {
+							$paramsVal['comparison_after_exchange_persen'] = ($paramsVal['comparison_after_exchange_result'] * 100);
+						} else {
+							$paramsVal['comparison_after_exchange_persen'] = 0;
+						}
+					}
+				}
+			}
+			if (count($this->insert_to_enabled_data_params) > 0) {
+				foreach ($this->insert_to_enabled_data_params as $insertVal) {
+					$comparison_date = array(
+						'starting' => $insertVal['comparison_datetime_starting'], 
+						'stopping' => $insertVal['comparison_datetime_stopping'],
+					);
+					if ($to_stopping_dateobject->format('Y-m-d H:i:s') > $this->CI->DateObject->format('Y-m-d H:i:s')) {
+						$collectData['insert_enabled_data_result'][] = $this->mod_ticker->insert_ticker_data_collection_to_enabled_data($collectData['collect']['enabled_data']->seq, $comparison_date, $insertVal);
+					} else {
+						$collectData['insert_enabled_data_result'][] = 0;
+					}
+				}
+			}
+			$collectData['insert_to_enabled_data_params'] = $this->insert_to_enabled_data_params;
+		}
+		if (!$this->error) {
+			//print_r($collectData);
+			echo "DONE";
+		} else {
+			print_r($this->error_msg);
+		}
+	}
+	private function calculte_and_insert_to_enabled_data($input_params = array()) {
+		$return_int = 0;
+		if (count($input_params) === 0) {
+			return FALSE;
+		}
+		if (isset($input_params['exchange_from_max']) && isset($input_params['exchange_to_max'])) {
+			$input_params['exchange_from_max'] = sprintf("%.02f", $input_params['exchange_from_max']);
+			$input_params['exchange_to_max'] = sprintf("%.02f", $input_params['exchange_to_max']);
+			if (($input_params['exchange_from_max'] > 0) && ($input_params['exchange_to_max'] > 0)) {
+				$return_int = ($input_params['exchange_from_max'] / $input_params['exchange_to_max']);
+				$return_int = round($return_int, 4, PHP_ROUND_HALF_ODD);
+				
+				//$return_int = sprintf("%.02f", $return_int);
+			}
+		}
+		if ($return_int > 0) {
+			$return_int = (1 - $return_int);
+		}
+		return $return_int;
+	}
+	
+	
+	
+	
+	function get_enabled_data_intervals() {
+		
+	}
+}
+
+
+$Update_cryptocurrency = new Update_cryptocurrency();
+# Update Tiecker
+$Update_cryptocurrency->update_cryptocurrency_ticker(1);
+$Update_cryptocurrency->update_cryptocurrency_ticker(2);
+
+# Update Enabled Data
+$Update_cryptocurrency->update_enabled_data(1);
+$Update_cryptocurrency->update_enabled_data(2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
