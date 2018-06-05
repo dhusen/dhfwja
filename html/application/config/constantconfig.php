@@ -135,22 +135,22 @@ class ConstantConfig {
 				case 'api':
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
-					$db_params['username'] = 'dhfwjaco';
-					$db_params['password'] = '97BqtEge89';
+					$db_params['username'] = 'USERNAME';
+					$db_params['password'] = 'PASSWORD';
 					$db_params['database'] = 'dhfwjaco_api';
 				break;
 				case 'dashboard':
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
-					$db_params['username'] = 'dhfwjaco';
-					$db_params['password'] = '97BqtEge89';
+					$db_params['username'] = 'USERNAME';
+					$db_params['password'] = 'PASSWORD';
 					$db_params['database'] = 'dhfwjaco_dashboard';
 				break;
 				case 'log':
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
-					$db_params['username'] = 'dhfwjaco';
-					$db_params['password'] = '97BqtEge89';
+					$db_params['username'] = 'USERNAME';
+					$db_params['password'] = 'PASSWORD';
 					$db_params['database'] = 'dhfwjaco_logs';
 				break;
 				case 'core':
@@ -159,15 +159,15 @@ class ConstantConfig {
 				default:
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
-					$db_params['username'] = 'dhfwjaco';
-					$db_params['password'] = '97BqtEge89';
+					$db_params['username'] = 'USERNAME';
+					$db_params['password'] = 'PASSWORD';
 					$db_params['database'] = 'dhfwjaco_core';
 				break;
 				case 'cryptocurrency':
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
-					$db_params['username'] = 'dhfwjaco';
-					$db_params['password'] = '97BqtEge89';
+					$db_params['username'] = 'USERNAME';
+					$db_params['password'] = 'PASSWORD';
 					$db_params['database'] = 'dhfwjaco_core';
 				break;
 			}
@@ -178,21 +178,21 @@ class ConstantConfig {
 					$db_params['dbport'] = 3306;
 					$db_params['username'] = 'project';
 					$db_params['password'] = 'project.true';
-					$db_params['database'] = 'tdpid_api';
+					$db_params['database'] = 'dhfwjaco_api';
 				break;
 				case 'dashboard':
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
 					$db_params['username'] = 'project';
-					$db_params['password'] = 'project.true';
-					$db_params['database'] = 'tdpid_dashboard';
+					$db_params['password'] = 'PASSWORD';
+					$db_params['database'] = 'dhfwjaco_dashboard';
 				break;
 				case 'log':
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
 					$db_params['username'] = 'project';
-					$db_params['password'] = 'project.true';
-					$db_params['database'] = 'tdpid_logs';
+					$db_params['password'] = 'PASSWORD';
+					$db_params['database'] = 'dhfwjaco_logs';
 				break;
 				case 'core':
 				case 'default':
@@ -201,22 +201,22 @@ class ConstantConfig {
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
 					$db_params['username'] = 'project';
-					$db_params['password'] = 'project.true';
-					$db_params['database'] = 'tdpid_core';
+					$db_params['password'] = 'PASSWORD';
+					$db_params['database'] = 'dhfwjaco_core';
 				break;
 				case 'mutasi':
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
 					$db_params['username'] = 'project';
-					$db_params['password'] = 'project.true';
-					$db_params['database'] = 'tdpid_mutasi_core';
+					$db_params['password'] = 'PASSWORD';
+					$db_params['database'] = 'dhfwjaco_mutasi_core';
 				break;
 				case 'cryptocurrency':
 					$db_params['hostname'] = 'localhost';
 					$db_params['dbport'] = 3306;
 					$db_params['username'] = 'project';
-					$db_params['password'] = 'project.true';
-					$db_params['database'] = 'tdpid_cryptocurrency';
+					$db_params['password'] = 'PASSWORD';
+					$db_params['database'] = 'dhfwjaco_cryptocurrency';
 				break;
 			}
 		}
