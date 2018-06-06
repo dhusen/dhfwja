@@ -9,11 +9,12 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 	protected $DateObject;
 	protected $email_vendor;
 	protected $base_dashboard, $base_cryptocurrency = array();
-	//protected $CI;
 	protected $insert_to_enabled_data_params = array();
 	function __construct() {
 		parent::__construct();
-		//$this->CI = &get_instance();
+		if (!is_cli()) {
+			exit('Only command line access');
+		}
 		$this->load->helper('dashboard/dashboard_functions');
 		$this->load->config('dashboard/base_dashboard');
 		$this->base_dashboard = $this->config->item('base_dashboard');
@@ -443,23 +444,27 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 		}
 	}
 	
-}
-
-/*
-$Cryptocurrency_ticker_data_update = new Cryptocurrency_ticker_data_update();
-$Comparison_enabled = $Cryptocurrency_ticker_data_update->get_enabled_comparison();
-$Cryptocurrency_ticker_data_update->update_cryptocurrency_ticker(1); // Kraken
-$Cryptocurrency_ticker_data_update->update_cryptocurrency_ticker(2); // Bitcoin Indonesia
-
-if (is_array($Comparison_enabled) && (count($Comparison_enabled) > 0)) {
-	foreach ($Comparison_enabled as $val) {
-		$Cryptocurrency_ticker_data_update->update_enabled_data($val->seq);
-		//print_r($val);
+	//=================================
+	// Running this instance\
+	function running_cryptocurrency_cli() {
+		try {
+			$Comparison_enabled = $this->get_enabled_comparison();
+		} catch (Exception $ex) {
+			throw $ex;
+			return false;
+		}
+		// Kraken
+		$this->update_cryptocurrency_ticker(1);
+		// Indodax (Former: Bitcoin Indonesia)
+		$this->update_cryptocurrency_ticker(2);
+		if (is_array($Comparison_enabled) && (count($Comparison_enabled) > 0)) {
+			foreach ($Comparison_enabled as $val) {
+				$this->update_enabled_data($val->seq);
+			}
+		}
 	}
+	
 }
-*/
-//$Cryptocurrency_ticker_data_update->update_enabled_data(3);
-
 
 
 
