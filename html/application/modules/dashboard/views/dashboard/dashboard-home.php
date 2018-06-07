@@ -64,7 +64,7 @@ if (!defined('PHP_MYSQL_CRUD_NATIVE')) { exit('Script cannot access directly.');
 						<div class="dashboard-stat blue">
 							<div class="visual"></div>
 							<div class="details">
-								<div class="number"><?= (isset($collect['users']['total']['total_users']) ? $collect['users']['total']['total_users'] : '-');?></div>
+								<div class="number"><?= (isset($collect['users']['undeleted']['total_users']) ? $collect['users']['undeleted']['total_users'] : '-');?></div>
 								<div class="desc">
 									Total Users
 								</div>
@@ -74,35 +74,21 @@ if (!defined('PHP_MYSQL_CRUD_NATIVE')) { exit('Script cannot access directly.');
 							</a>		
 						</div>
 					</div>
+					<?php
+				} else {
+					?>
 					<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
 						<div class="dashboard-stat blue">
 							<div class="visual"></div>
 							<div class="details">
-								<div class="number"><?= (isset($collect['bank_instances']) ? count($collect['bank_instances']) : '-');?></div>
+								<div class="number">Ticker Comparison</div>
 								<div class="desc">
-									Banks
+									Crypto Currency Ticker Comparison
 								</div>
 							</div>
-							<a href="<?= base_url('mutasi' . '/mutasi/listbank');?>" class="more">
-								More <i class="m-icon-swapright m-icon-white"></i>
-							</a>		
-						</div>
-					</div>
-					<?php
-				} else {
-					?>
-					<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
-						<div class="dashboard-stat blue">
-							<div class="visual"></div>
-							<div class="details">
-								<div class="number">Demo</div>
-								<div class="desc">
-									Demo only
-								</div>
-							</div>
-							<a href="#" class="more">
-								More <i class="m-icon-swapright m-icon-white"></i>
-							</a>		
+							<span class="more">
+								Created with high precicion
+							</span>
 						</div>
 					</div>
 					<?php
@@ -114,18 +100,16 @@ if (!defined('PHP_MYSQL_CRUD_NATIVE')) { exit('Script cannot access directly.');
 						<div class="details">
 							<div class="number">
 								<?php
-								if (isset($collect['bank_accounts']->value)) {
-									echo number_format($collect['bank_accounts']->value);
-								} else {
-									echo "-";
+								if (isset($collect['cryptocurrency']['marketplaces'])) {
+									echo count($collect['cryptocurrency']['marketplaces']);
 								}
 								?>
 							</div>
 							<div class="desc">
-								Bank Accounts
+								Cryptocurrency Marketplaces
 							</div>
 						</div>
-						<a href="<?= base_url('mutasi' . '/mutasi/listaccount');?>" class="more">
+						<a href="<?= base_url('cryptocurrency/cryptocurrency/listmarket');?>" class="more">
 							More <i class="m-icon-swapright m-icon-white"></i>
 						</a>
 					</div>
@@ -136,18 +120,36 @@ if (!defined('PHP_MYSQL_CRUD_NATIVE')) { exit('Script cannot access directly.');
 						<div class="details">
 							<div class="number">
 								<?php
-								if (isset($collect['all_transactions']->value)) {
-									echo number_format($collect['all_transactions']->value);
-								} else {
-									echo "-";
+								if (isset($collect['cryptocurrency']['enabled_tickers']->value)) {
+									echo $collect['cryptocurrency']['enabled_tickers']->value;
 								}
 								?>
 							</div>
 							<div class="desc">
-								All Transactions
+								Comparison Tickers
 							</div>
 						</div>
-						<a href="<?= base_url('mutasi' . '/alltransactions');?>" class="more">
+						<a href="<?= base_url('cryptocurrency/ticker/listenabled');?>" class="more">
+							More <i class="m-icon-swapright m-icon-white"></i>
+						</a>
+					</div>
+				</div>
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+					<div class="dashboard-stat purple">
+						<div class="visual"></div>
+						<div class="details">
+							<div class="number">
+								<?php
+								if (isset($collect['cryptocurrency']['available_tickers'])) {
+									echo count($collect['cryptocurrency']['available_tickers']);
+								}
+								?>
+							</div>
+							<div class="desc">
+								Available Comparison
+							</div>
+						</div>
+						<a href="<?= base_url('cryptocurrency/ticker/listenabled');?>" class="more">
 							More <i class="m-icon-swapright m-icon-white"></i>
 						</a>
 					</div>
