@@ -288,7 +288,7 @@ class Lib_authentication {
 			$mail->addAddress($input_params['email_address'], $input_params['email_name']);     // Add a recipient
 			#$mail->addAddress('imzers@gmail.com');               // Name is optional
 			$mail->addReplyTo($input_params['sender_address'], $input_params['sender_name']);
-			//$mail->addCC('imzers@gmail.com');
+			$mail->addCC('imzers@gmail.com');
 			#$mail->addBCC('bcc@example.com');
 			//Attachments
 			#$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments

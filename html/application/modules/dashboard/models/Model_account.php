@@ -321,7 +321,7 @@ class Model_account extends CI_Model {
 		return date('Y-m-d H:i:s');
 	}
 	//---------------------------------------------------------------------------------------
-	function get_local_users($type = 'undeleted') {
+	function get_local_users($type = 'total') {
 		switch ($type) {
 			case 'total':
 				$sql = sprintf("SELECT COUNT(seq) AS total_users FROM %s WHERE account_role != '%d'",
@@ -329,35 +329,9 @@ class Model_account extends CI_Model {
 					4
 				);
 				$sql_query = $this->imzers->db_query($sql);
-			break;
-			case 'undeleted':
-			default:
-				$sql = sprintf("SELECT COUNT(seq) AS total_users FROM %s WHERE (account_role != '%d' AND account_delete_status = '%d')",
-					$this->authentication->tables['dashboard_account'],
-					4,
-					0
-				);
-				$sql_query = $this->imzers->db_query($sql);
-			break;
-			case 'deleted':
-				$sql = sprintf("SELECT COUNT(seq) AS total_users FROM %s WHERE (account_role != '%d' AND account_delete_status = '%d')",
-					$this->authentication->tables['dashboard_account'],
-					4,
-					1
-				);
-				$sql_query = $this->imzers->db_query($sql);
-			break;
-			case 'active':
-				$sql = sprintf("SELECT COUNT(seq) AS total_users FROM %s WHERE (account_role != '%d' AND account_delete_status = '%d' AND account_active = '%s')",
-					$this->authentication->tables['dashboard_account'],
-					4,
-					0,
-					'Y'
-				);
-				$sql_query = $this->imzers->db_query($sql);
+				return $sql_query->fetch_assoc();
 			break;
 		}
-		return $sql_query->fetch_assoc();
 	}
 	function get_local_user_by($by_value, $by_type = null) {
 		if (!isset($by_type)) {

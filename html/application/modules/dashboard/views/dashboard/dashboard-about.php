@@ -57,14 +57,14 @@ if (!defined('PHP_MYSQL_CRUD_NATIVE')) { exit('Script cannot access directly.');
 					<div class="dashboard-stat green">
 						<div class="visual"></div>
 						<div class="details">
-							<div class="number">Ticker Comparison</div>
+							<div class="number">Demo</div>
 							<div class="desc">
-								Crypto Currency Ticker Comparison
+								Demo purpose only
 							</div>
 						</div>
-						<span class="more">
-							Created with high precision
-						</span>
+						<a href="#" class="more">
+							More <i class="m-icon-swapright m-icon-white"></i>
+						</a>		
 					</div>
 				</div>
 			</div>

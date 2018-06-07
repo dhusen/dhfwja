@@ -206,10 +206,10 @@ class Profile extends MY_Controller {
 				'district_code'		=> (isset($collectData['collect']['user-properties']['user_address_district']) ? $collectData['collect']['user-properties']['user_address_district'] : ''),
 				'area_code'			=> (isset($collectData['collect']['user-properties']['user_address_area']) ? $collectData['collect']['user-properties']['user_address_area'] : ''),
 			);
-			$collectData['collect']['address-province'] = ((strlen($collectData['address_params']['province_code']) > 0) ? $this->mod_account->get_province($collectData['address_params']) : array());
-			$collectData['collect']['address-city'] = ((strlen($collectData['address_params']['province_code']) > 0) ? $this->mod_account->get_city($collectData['address_params']) : array());
-			$collectData['collect']['address-district'] = ((strlen($collectData['address_params']['city_code']) > 0) ? $this->mod_account->get_district($collectData['address_params']) : array());
-			$collectData['collect']['address-area'] = ((strlen($collectData['address_params']['district_code']) > 0) ? $this->mod_account->get_area($collectData['address_params']) : array());
+			$collectData['collect']['address-province'] = ((strlen($collectData['address_params']['province_code']) > 0) ? $this->mod_account->get_province($collectData['address_params']) : NULL);
+			$collectData['collect']['address-city'] = ((strlen($collectData['address_params']['province_code']) > 0) ? $this->mod_account->get_city($collectData['address_params']) : NULL);
+			$collectData['collect']['address-district'] = ((strlen($collectData['address_params']['city_code']) > 0) ? $this->mod_account->get_district($collectData['address_params']) : NULL);
+			$collectData['collect']['address-area'] = ((strlen($collectData['address_params']['district_code']) > 0) ? $this->mod_account->get_area($collectData['address_params']) : NULL);
 			
 			$collectData['collect']['address-values'] = array();
 				

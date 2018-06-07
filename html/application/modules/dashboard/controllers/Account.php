@@ -1190,12 +1190,7 @@ class Account extends MY_Controller {
 				}
 			}
 		}
-		if (!$error) {
-			if ($collectData['local_user_properties']['password_rijandel'] !== $collectData['local_user_properties']['password_decrypt_items'][1]) {
-				$error = true;
-				$error_msg[] = "Hashing password string should be same with password hash by salt.";
-			}
-		}
+		
 		/*
 		echo "<pre>";
 		if (!$error) {
@@ -1212,6 +1207,14 @@ class Account extends MY_Controller {
 		exit;
 		*/
 		
+		/*
+		if (!$error) {
+			if ($collectData['local_user_properties']['password_rijandel'] !== $collectData['local_user_properties']['password_decrypt_items'][1]) {
+				$error = true;
+				$error_msg[] = "Hashing password string should be same with password hash by salt.";
+			}
+		}
+		*/
 		//---------------------------------------------------------------------------------------------------
 		if (!$error) {
 			$query_params['account_salt_new'] = $collectData['local_user_properties']['password_decrypt_items'][0];
@@ -1319,6 +1322,8 @@ class Account extends MY_Controller {
 			exit;
 		}
 		//----
+		//print_r($this->session->userdata);
+		//exit;
 		$query_params = array();
 		$user_params = array();
 		$user_params['body'] = array(

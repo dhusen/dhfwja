@@ -97,7 +97,7 @@ defined('ROLE_USER') OR define('ROLE_USER', '4');
 
 //-----------
 // Constant of Authkey and SecretKey
-defined('ENCRYPT_KEY') OR define('ENCRYPT_KEY', 'Ui1456IMZERS091hY'); // 16, 32, or 64 length
+defined('ENCRYPT_KEY') OR define('ENCRYPT_KEY', 'Ui1456IMZERS091h'); // 16, 32, or 64 length
 defined('ENCRYPT_IV') OR define('ENCRYPT_IV', '8662724663f2f9a44661d76402168fa4'); // For Rijandel (Must 32 Length)
 
 
