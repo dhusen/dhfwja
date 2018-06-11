@@ -59,12 +59,7 @@ $autoload['packages'] = array();
 |
 |	$autoload['libraries'] = array('user_agent' => 'ua');
 */
-if (!is_cli()) {
-	$autoload['libraries'] = array('session');
-} else {
-	$autoload['libraries'] = array();
-}
-
+$autoload['libraries'] = array('session');
 /*
 | -------------------------------------------------------------------
 |  Auto-load Drivers
