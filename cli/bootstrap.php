@@ -3,7 +3,7 @@
 // Important thing for allow load Codeigniter from outside
 // -------------------------------------------------------
 define('CLI_BASEPATH', __DIR__);
-$HTML_BASEPATH = (dirname(CLI_BASEPATH) . DIRECTORY_SEPARATOR . 'html');
+$HTML_BASEPATH = (dirname(CLI_BASEPATH) . DIRECTORY_SEPARATOR . 'public_html');
 $cli_system_path = ($HTML_BASEPATH . DIRECTORY_SEPARATOR . 'system');
 $cli_application_folder = ($HTML_BASEPATH . DIRECTORY_SEPARATOR . 'application');
 // -------------------------------------------------------
