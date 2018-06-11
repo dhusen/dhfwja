@@ -32,6 +32,7 @@ class ConstantConfig {
 		'cryptocurrency',
 	);
 	function __construct() {
+		date_default_timezone_set(self::$timezone);
 		self::$THIS_SERVER_VHOST = self::root();
 	}
 	public static function get_instance() {
