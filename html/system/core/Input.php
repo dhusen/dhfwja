@@ -430,8 +430,7 @@ class CI_Input {
 			$proxy_ips = explode(',', str_replace(' ', '', $proxy_ips));
 		}
 
-		//$this->ip_address = $this->server('REMOTE_ADDR');
-		$this->ip_address = array_key_exists('REMOTE_ADDR', $_SERVER) ? $this->server('REMOTE_ADDR') : '0.0.0.0';
+		$this->ip_address = $this->server('REMOTE_ADDR');
 		if ($proxy_ips)
 		{
 			foreach (array('HTTP_X_FORWARDED_FOR', 'HTTP_CLIENT_IP', 'HTTP_X_CLIENT_IP', 'HTTP_X_CLUSTER_CLIENT_IP') as $header)
