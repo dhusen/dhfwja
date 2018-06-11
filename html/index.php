@@ -273,7 +273,17 @@ $ci_debug['APPPATH'] = APPPATH;
 define('VIEWPATH', $view_folder.DIRECTORY_SEPARATOR);
 $ci_debug['VIEWPATH'] = VIEWPATH;
 
-	
+
+// FOR PHP CLI PURPOSE
+$_SERVER["REMOTE_ADDR"]     = array_key_exists( 'REMOTE_ADDR',      $_SERVER) ? $_SERVER['REMOTE_ADDR']     : '127.0.0.1'; 
+$_SERVER["REMOTE_HOST"]     = array_key_exists( 'REMOTE_HOST',      $_SERVER) ? $_SERVER['REMOTE_HOST']     : gethostbyaddr($_SERVER["REMOTE_ADDR"]);
+$_SERVER["SERVER_PROTOCOL"] = array_key_exists( 'SERVER_PROTOCOL',  $_SERVER) ? $_SERVER['SERVER_PROTOCOL'] : "HTTP/1.1";
+$_SERVER["REQUEST_METHOD"]  = array_key_exists( 'REQUEST_METHOD',   $_SERVER) ? $_SERVER['REQUEST_METHOD']  : "GET";
+$_SERVER["SERVER_PORT"]     = array_key_exists( 'SERVER_PORT',      $_SERVER) ? $_SERVER['SERVER_PORT']     : "80";
+$_SERVER["SERVER_SOFTWARE"] = array_key_exists( 'SERVER_SOFTWARE',  $_SERVER) ? $_SERVER['SERVER_SOFTWARE'] : "Apache";
+$_SERVER["HTTP_ACCEPT"]     = array_key_exists( 'HTTP_ACCEPT',      $_SERVER) ? $_SERVER['HTTP_ACCEPT']     : "text/html,application/xhtml+xml,application/xml,application/json";
+$_SERVER["HTTP_HOST"]       = array_key_exists( 'HTTP_HOST',        $_SERVER) ? $_SERVER['HTTP_HOST']       : "www.site.com";
+$_SERVER["HTTP_USER_AGENT"] = array_key_exists( 'HTTP_USER_AGENT',  $_SERVER) ? $_SERVER['HTTP_USER_AGENT'] : 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36';	
 
 /*
  * --------------------------------------------------------------------
