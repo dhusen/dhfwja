@@ -492,20 +492,6 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 
 
 
-$Cryptocurrency_ticker_data_update = new Cryptocurrency_ticker_data_update();
-$Comparison_enabled = $Cryptocurrency_ticker_data_update->get_enabled_comparison();
-$Cryptocurrency_ticker_data_update->update_cryptocurrency_ticker(1); // Kraken
-$Cryptocurrency_ticker_data_update->update_cryptocurrency_ticker(2); // Bitcoin Indonesia
-
-if (is_array($Comparison_enabled) && (count($Comparison_enabled) > 0)) {
-	foreach ($Comparison_enabled as $val) {
-		$Cryptocurrency_ticker_data_update->update_enabled_data($val->seq);
-		//print_r($val);
-	}
-}
-//$Cryptocurrency_ticker_data_update->update_enabled_data(3);
-
-
 
 
 
