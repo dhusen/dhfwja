@@ -41,6 +41,13 @@ class Cli_cryptocurrency_update_scheduler extends CI_Model {
 		$sql_query = $this->db_cryptocurrency->get($this->cryptocurrency_tables['ticker_email']);
 		return $sql_query->result();
 	}
+	
+	
+	
+	//------------
+	function usp_delete_ticker_data30days() {
+		$this->db_cryptocurrency->query('CALL usp_delete_ticker_data30days()');
+	}
 }
 
 

@@ -40,7 +40,9 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 		$this->load->model('cryptocurrency/Cli_cryptocurrency_update_scheduler', 'mod_cli');
 	}
 	
-	
+	function delete_data_scheduler() {
+		$this->mod_cli->usp_delete_ticker_data30days();
+	}
 	//======================================================================
 	// Cryptocurrency Actions
 	function update_cryptocurrency_ticker($market_seq = 0) {
