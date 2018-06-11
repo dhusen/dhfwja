@@ -4,7 +4,7 @@ class ConstantConfig {
 	private static $instance = NULL;
 	public static $timezone = 'Asia/Bangkok';
 	const THIS_SERVER_NAME 				= 'dhfwja.com'; // Change domain of live or sandbox
-	const THIS_SERVER_MODE 				= 'dev'; // 'sandbox' || 'live'
+	const THIS_SERVER_MODE 				= 'live'; // 'sandbox' || 'live'
 	const THIS_SERVER_PROTOCOL			= 'https'; // 'http' || 'https'
 	const THIS_SERVER_LOGPATH			= (__DIR__ . '/logs'); // Server Logs path
 	## return to api caller
@@ -136,22 +136,22 @@ class ConstantConfig {
 					case 'api':
 						$db_params['hostname'] = 'localhost';
 						$db_params['dbport'] = 3306;
-						$db_params['username'] = 'USERNAME';
-						$db_params['password'] = 'PASSWORD';
+						$db_params['username'] = 'dhfwjaco';
+						$db_params['password'] = '97BqtEge89';
 						$db_params['database'] = 'dhfwjaco_api';
 					break;
 					case 'dashboard':
 						$db_params['hostname'] = 'localhost';
 						$db_params['dbport'] = 3306;
-						$db_params['username'] = 'USERNAME';
-						$db_params['password'] = 'PASSWORD';
+						$db_params['username'] = 'dhfwjaco';
+						$db_params['password'] = '97BqtEge89';
 						$db_params['database'] = 'dhfwjaco_dashboard';
 					break;
 					case 'log':
 						$db_params['hostname'] = 'localhost';
 						$db_params['dbport'] = 3306;
-						$db_params['username'] = 'USERNAME';
-						$db_params['password'] = 'PASSWORD';
+						$db_params['username'] = 'dhfwjaco';
+						$db_params['password'] = '97BqtEge89';
 						$db_params['database'] = 'dhfwjaco_logs';
 					break;
 					case 'core':
@@ -160,15 +160,15 @@ class ConstantConfig {
 					default:
 						$db_params['hostname'] = 'localhost';
 						$db_params['dbport'] = 3306;
-						$db_params['username'] = 'USERNAME';
-						$db_params['password'] = 'PASSWORD';
+						$db_params['username'] = 'dhfwjaco';
+						$db_params['password'] = '97BqtEge89';
 						$db_params['database'] = 'dhfwjaco_core';
 					break;
 					case 'cryptocurrency':
 						$db_params['hostname'] = 'localhost';
 						$db_params['dbport'] = 3306;
-						$db_params['username'] = 'USERNAME';
-						$db_params['password'] = 'PASSWORD';
+						$db_params['username'] = 'dhfwjaco';
+						$db_params['password'] = '97BqtEge89';
 						$db_params['database'] = 'dhfwjaco_core';
 					break;
 				}
