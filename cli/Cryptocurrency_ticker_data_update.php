@@ -9,11 +9,14 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 	protected $DateObject;
 	protected $email_vendor;
 	protected $base_dashboard, $base_cryptocurrency = array();
-	//protected $CI;
 	protected $insert_to_enabled_data_params = array();
 	function __construct() {
 		parent::__construct();
-		//$this->CI = &get_instance();
+		/*
+		if (!is_cli()) {
+			Exit("This page should only running by cli.");
+		}
+		*/
 		$this->load->helper('dashboard/dashboard_functions');
 		$this->load->config('dashboard/base_dashboard');
 		$this->base_dashboard = $this->config->item('base_dashboard');
@@ -287,6 +290,8 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 								'exchange_from_last'				=> $FromCollectVal['exchange']['last_amount'],
 								'today_comparison_currency'			=> $collectData['today_exchange']->exchange_amount_to,
 								'today_comparison_limit'			=> $collectData['collect']['enabled_data']->cryptocurrency_premium_limit,
+								'today_comparison_limit_min'		=> $collectData['collect']['enabled_data']->cryptocurrency_premium_limit_min,
+								'today_comparison_limit_max'		=> $collectData['collect']['enabled_data']->cryptocurrency_premium_limit_max,
 							);
 						}
 					}
@@ -350,7 +355,12 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 						// Send email if comparison_after_exchange_persen limit more than cryptocurrency_premium_limit
 						$notification_datetime_marker = new DateTime($insertVal['comparison_datetime_stopping']);
 						if ($notification_datetime_marker > $this->DateObject) {
+							/*
 							if ($insertVal['comparison_after_exchange_persen'] > $insertVal['today_comparison_limit']) {
+								$this->running_send_email_of_premium_limit($insertVal, $collectData['collect']['enabled_data'], $comparison_date);
+							}
+							*/
+							if (($insertVal['comparison_after_exchange_persen'] < $insertVal['today_comparison_limit_min']) || ($insertVal['comparison_after_exchange_persen'] > $insertVal['today_comparison_limit_max'])) {
 								$this->running_send_email_of_premium_limit($insertVal, $collectData['collect']['enabled_data'], $comparison_date);
 							}
 						}
@@ -426,6 +436,8 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 						
 						$query_params['account_action_body'] = str_replace('[tag_result]', $result_params['comparison_after_exchange_persen'], $query_params['account_action_body']);
 						$query_params['account_action_body'] = str_replace('[tag_limit_premium]', $result_params['today_comparison_limit'], $query_params['account_action_body']);
+						$query_params['account_action_body'] = str_replace('[tag_limit_premium_min]', $result_params['today_comparison_limit_min'], $query_params['account_action_body']);
+						$query_params['account_action_body'] = str_replace('[tag_limit_premium_max]', $result_params['today_comparison_limit_max'], $query_params['account_action_body']);
 						$query_params['account_action_body'] = str_replace('[tag_currency_code]', strtoupper($enabled_data->ticker_data->cryptocurrency_from_realcurrency), $query_params['account_action_body']);
 						$query_params['account_action_body'] = str_replace('[tag_currency_exchange]', $result_params['today_comparison_currency'], $query_params['account_action_body']);
 						
@@ -443,7 +455,40 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 		}
 	}
 	
+	
+	//=================================
+	// Running this instance
+	function running_cryptocurrency_cli() {
+		try {
+			$Comparison_enabled = $this->get_enabled_comparison();
+		} catch (Exception $ex) {
+			throw $ex;
+			return false;
+		}
+		// Kraken
+		$this->update_cryptocurrency_ticker(1);
+		// Indodax (Former: Bitcoin Indonesia)
+		$this->update_cryptocurrency_ticker(2);
+		if (is_array($Comparison_enabled) && (count($Comparison_enabled) > 0)) {
+			foreach ($Comparison_enabled as $val) {
+				$this->update_enabled_data($val->seq);
+			}
+		}
+	}
+	
+	function execute_update_crypto_data() {
+		// Kraken
+		$this->update_cryptocurrency_ticker(1);
+		// Indodax (Former: Bitcoin Indonesia)
+		$this->update_cryptocurrency_ticker(2);
+		
+		
+		# All is done
+		echo "All is Done";
+	}
+	
 }
+
 
 
 $Cryptocurrency_ticker_data_update = new Cryptocurrency_ticker_data_update();
@@ -458,9 +503,6 @@ if (is_array($Comparison_enabled) && (count($Comparison_enabled) > 0)) {
 	}
 }
 //$Cryptocurrency_ticker_data_update->update_enabled_data(3);
-
-
-
 
 
 
