@@ -257,6 +257,7 @@ class Lib_authentication {
 		$config['bcc_batch_size'] = 200;
 		
 		$input_params['email_name'] = (isset($input_params['sender_name']) ? $input_params['sender_name'] : 'Dear Hello');
+		$input_params['email_cc'] = (isset($input_params['email_cc']) ? $input_params['email_cc'] : '');
 		//== Load PHP Mailer
 		$mail = new PHPMailer(true);
 		try {
@@ -288,7 +289,9 @@ class Lib_authentication {
 			$mail->addAddress($input_params['email_address'], $input_params['email_name']);     // Add a recipient
 			#$mail->addAddress('imzers@gmail.com');               // Name is optional
 			$mail->addReplyTo($input_params['sender_address'], $input_params['sender_name']);
-			$mail->addCC('imzers@gmail.com');
+			if (strlen($input_params['email_cc']) > 0) {
+				$mail->addCC($input_params['email_cc']);
+			}
 			#$mail->addBCC('bcc@example.com');
 			//Attachments
 			#$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
