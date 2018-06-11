@@ -455,7 +455,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 	
 	
 	//=================================
-	// Running this instance\
+	// Running this instance
 	function running_cryptocurrency_cli() {
 		try {
 			$Comparison_enabled = $this->get_enabled_comparison();
@@ -472,6 +472,17 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 				$this->update_enabled_data($val->seq);
 			}
 		}
+	}
+	
+	function execute_update_crypto_data() {
+		// Kraken
+		$this->update_cryptocurrency_ticker(1);
+		// Indodax (Former: Bitcoin Indonesia)
+		$this->update_cryptocurrency_ticker(2);
+		
+		
+		# All is done
+		echo "All is Done";
 	}
 	
 }
