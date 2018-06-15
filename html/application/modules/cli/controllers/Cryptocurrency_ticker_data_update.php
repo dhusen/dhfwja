@@ -12,11 +12,9 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 	protected $insert_to_enabled_data_params = array();
 	function __construct() {
 		parent::__construct();
-		/*
 		if (!is_cli()) {
 			Exit("This page should only running by cli.");
 		}
-		*/
 		$this->load->helper('dashboard/dashboard_functions');
 		$this->load->config('dashboard/base_dashboard');
 		$this->base_dashboard = $this->config->item('base_dashboard');
@@ -343,23 +341,26 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 			}
 			if (count($collectData['insert_to_enabled_data_params']) > 0) {
 				foreach ($collectData['insert_to_enabled_data_params'] as $insertKey => $insertVal) {
+					$collectData['insert_enabled_data_result'][] = array(
+						'insert_id'		=> $this->mod_ticker->insert_ticker_data_collection_to_enabled_data($collectData['collect']['enabled_data']->seq, $comparison_date, $insertVal),
+						'insert_params'	=> $insertVal,
+					);
+				}
+				/*
+				foreach ($collectData['insert_to_enabled_data_params'] as $insertKey => $insertVal) {
 					$comparison_date = array(
 						'starting' => $insertVal['comparison_datetime_starting'], 
 						'stopping' => $insertVal['comparison_datetime_stopping'],
 					);
-					if ($to_stopping_dateobject->format('Y-m-d H:i:s') > $this->DateObject->format('Y-m-d H:i:s')) {
+					$collectData['to_stopping_dateobject'] = new DateTime($comparison_date['stopping']);
+					if ($collectData['to_stopping_dateobject']->format('Y-m-d H:i:s') > $this->DateObject->format('Y-m-d H:i:s')) {
 						$collectData['insert_enabled_data_result'][] = array(
 							'insert_id'		=> $this->mod_ticker->insert_ticker_data_collection_to_enabled_data($collectData['collect']['enabled_data']->seq, $comparison_date, $insertVal),
 							'insert_params'	=> $insertVal,
 						);
 						// Send email if comparison_after_exchange_persen limit more than cryptocurrency_premium_limit
-						$notification_datetime_marker = new DateTime($insertVal['comparison_datetime_stopping']);
-						if ($notification_datetime_marker > $this->DateObject) {
-							/*
-							if ($insertVal['comparison_after_exchange_persen'] > $insertVal['today_comparison_limit']) {
-								$this->running_send_email_of_premium_limit($insertVal, $collectData['collect']['enabled_data'], $comparison_date);
-							}
-							*/
+						$collectData['notification_datetime_marker'] = new DateTime($insertVal['comparison_datetime_stopping']);
+						if ($collectData['notification_datetime_marker'] > $this->DateObject) {
 							if (($insertVal['comparison_after_exchange_persen'] < $insertVal['today_comparison_limit_min']) || ($insertVal['comparison_after_exchange_persen'] > $insertVal['today_comparison_limit_max'])) {
 								$this->running_send_email_of_premium_limit($insertVal, $collectData['collect']['enabled_data'], $comparison_date);
 							}
@@ -371,6 +372,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 						);
 					}
 				}
+				*/
 			}
 		}
 		if (!$this->error) {
