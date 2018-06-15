@@ -367,6 +367,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 						}
 						*/
 					} else {
+						$insertVal['comparison_date'] = $comparison_date;
 						$collectData['insert_enabled_data_result'][] = array(
 							'insert_id'		=> -1001,
 							'insert_params'	=> $insertVal,
