@@ -12,9 +12,11 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 	protected $insert_to_enabled_data_params = array();
 	function __construct() {
 		parent::__construct();
+		/*
 		if (!is_cli()) {
 			Exit("This page should only running by cli.");
 		}
+		*/
 		$this->load->helper('dashboard/dashboard_functions');
 		$this->load->config('dashboard/base_dashboard');
 		$this->base_dashboard = $this->config->item('base_dashboard');
