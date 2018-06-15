@@ -446,6 +446,8 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 						
 						$query_params['account_action_body'] = str_replace('[tag_datetime_starting]', $result_params['comparison_datetime_starting'], $query_params['account_action_body']);
 						$query_params['account_action_body'] = str_replace('[tag_datetime_stopping]', $result_params['comparison_datetime_stopping'], $query_params['account_action_body']);
+						$query_params['account_action_body'] = str_replace('[tag_datetime_current]', $comparison_date['current'], $query_params['account_action_body']);
+						
 						try {
 							$send_email = $this->authentication->send_email($this->email_vendor, $query_params);
 						} catch (Exception $ex) {
