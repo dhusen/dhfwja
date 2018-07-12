@@ -173,6 +173,7 @@ class Account extends MY_Controller {
 		}
 	}
 	function registeraction() {
+		exit("Register is disabled");
 		//--------------------
 		$error = FALSE;
 		$error_msg = [];
