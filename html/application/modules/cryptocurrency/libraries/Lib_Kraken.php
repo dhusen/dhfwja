@@ -50,8 +50,8 @@ class Lib_Kraken {
 			$ticker_currency = 'XXRPZUSD';
 		}
 		try {
-			$marketplace_ticker = $this->kraken->QueryPublic('Ticker', array('pair' => $ticker_currency));
-			//$marketplace_ticker = $this->get_kraken_ticker_data_by_curl('POST', array('pair' => $ticker_currency));
+			//$marketplace_ticker = $this->kraken->QueryPublic('Ticker', array('pair' => $ticker_currency));
+			$marketplace_ticker = json_decode($this->get_kraken_ticker_data_by_curl('POST', array('pair' => $ticker_currency)), true);
 		} catch (Exception $ex) {
 			throw $ex;
 			return array(
