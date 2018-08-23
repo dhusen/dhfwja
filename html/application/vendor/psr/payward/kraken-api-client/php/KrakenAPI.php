@@ -84,13 +84,14 @@ class KrakenAPI {
         curl_setopt($this->curl, CURLOPT_POSTFIELDS, $postdata);
         curl_setopt($this->curl, CURLOPT_HTTPHEADER, array());
         $result = curl_exec($this->curl);
-        if($result===false)
+        if($result===false) {
             throw new KrakenAPIException('CURL error: ' . curl_error($this->curl));
+		}
 
         // decode results
         $result = json_decode($result, true);
         if(!is_array($result)) {
-            throw new KrakenAPIException('JSON decode error');
+            throw new KrakenAPIException('JSON decode error: ' . $result);
 		}
 
         return $result;
