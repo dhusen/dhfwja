@@ -44,7 +44,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 	// Cryptocurrency Actions
 	function update_cryptocurrency_ticker($market_seq = 0) {
 		$collectData = array(
-			'page'					=> 'cryptocurrency-add-email',
+			'page'					=> 'cryptocurrency-update-collected',
 			'title'					=> 'Cryptocurrency Bank',
 			'collect'				=> array(),
 			'market_seq'			=> (is_numeric($market_seq) ? (int)$market_seq : 0),
@@ -169,7 +169,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 		}
 		
 		if (!$this->error) {
-			print_r($collectData);
+			print_r($collectData['collect']['tickers']);
 			//echo "DONE\r\n";
 		} else {
 			print_r($this->error_msg);
