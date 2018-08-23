@@ -50,7 +50,8 @@ class Lib_Kraken {
 			$ticker_currency = 'XXRPZUSD';
 		}
 		try {
-			$marketplace_ticker = $this->kraken->QueryPublic('Ticker', array('pair' => $ticker_currency));
+			//$marketplace_ticker = $this->kraken->QueryPublic('Ticker', array('pair' => $ticker_currency));
+			$marketplace_ticker = $this->get_kraken_ticker_data_by_curl('POST', array('pair' => $ticker_currency));
 		} catch (Exception $ex) {
 			throw $ex;
 			return array(
@@ -61,7 +62,34 @@ class Lib_Kraken {
 		return $marketplace_ticker;
 	}
 	
-	
+	private function get_kraken_ticker_data_by_curl($method, $params = array()) {
+		$url = 'https://api.kraken.com/0/public/Ticker';
+		$post_params = http_build_query($params);
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => $url,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => "",
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 30,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => $method,
+			CURLOPT_POSTFIELDS => $post_params,
+			CURLOPT_HTTPHEADER => array(
+				"Cache-Control: no-cache",
+				"Content-Type: application/x-www-form-urlencoded",
+				"Postman-Token: 65ed11c5-73db-40d2-aae7-b6daeb428921"
+			),
+		));
+		$response = curl_exec($curl);
+		$err = curl_error($curl);
+		curl_close($curl);
+		if ($err) {
+			return json_encode(array('error' => true, 'result' => NULL));
+		} else {
+			return $response;
+		}
+	}
 	
 }
 

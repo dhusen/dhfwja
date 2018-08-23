@@ -169,8 +169,8 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 		}
 		
 		if (!$this->error) {
-			//print_r($collectData);
-			echo "DONE\r\n";
+			print_r($collectData);
+			//echo "DONE\r\n";
 		} else {
 			print_r($this->error_msg);
 		}
