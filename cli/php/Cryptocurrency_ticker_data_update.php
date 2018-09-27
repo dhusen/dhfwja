@@ -344,7 +344,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 			$collectData['insert_enabled_data_result'] = array();
 			if (is_array($collectData['insert_to_enabled_data_params'])) {
 				if (count($collectData['insert_to_enabled_data_params']) > 0) {
-					foreach ($collectData['insert_to_enabled_data_params'] as $paramsVal) {
+					foreach ($collectData['insert_to_enabled_data_params'] as &$paramsVal) {
 						$paramsVal['comparison_after_exchange_result'] = $this->calculte_and_insert_to_enabled_data($paramsVal);
 						if ($paramsVal['comparison_after_exchange_result'] !== 0) {
 							$paramsVal['comparison_after_exchange_persen'] = ($paramsVal['comparison_after_exchange_result'] * 100);
