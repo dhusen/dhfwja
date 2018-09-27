@@ -117,10 +117,18 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 				foreach ($collectData['collect']['tickers'] as $tickerKey => $tickerVal) {
 					switch (strtolower($collectData['market_data']->market_api_string)) {
 						case 'uppercase':
-							$collectData['ticker_imploded_array'] = array(
-								strtoupper($tickerVal['from']->currency_market_code),
-								strtoupper($tickerVal['to']->currency_market_code),
-							);
+							# BCH from Kraken
+							if ($tickerVal['from']->seq == 1) {
+								$collectData['ticker_imploded_array'] = array(
+									strtoupper($tickerVal['from']->currency_market_altname),
+									strtoupper($tickerVal['to']->currency_market_altname),
+								);
+							} else {
+								$collectData['ticker_imploded_array'] = array(
+									strtoupper($tickerVal['from']->currency_market_code),
+									strtoupper($tickerVal['to']->currency_market_code),
+								);
+							}
 						break;
 						case 'lowercase':
 						default:
