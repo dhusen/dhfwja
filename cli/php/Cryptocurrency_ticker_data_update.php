@@ -407,10 +407,10 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 			return FALSE;
 		}
 		if (isset($input_params['exchange_from_max']) && isset($input_params['exchange_to_max'])) {
-			$input_params['exchange_from_max'] = sprintf("%.08f", $input_params['exchange_from_max']);
-			$input_params['exchange_to_max'] = sprintf("%.08f", $input_params['exchange_to_max']);
-			$input_params['exchange_from_last'] = sprintf("%.08f", $input_params['exchange_from_last']);
-			$input_params['exchange_to_last'] = sprintf("%.08f", $input_params['exchange_to_last']);
+			$input_params['exchange_from_max'] = sprintf("%.04f", $input_params['exchange_from_max']);
+			$input_params['exchange_to_max'] = sprintf("%.04f", $input_params['exchange_to_max']);
+			$input_params['exchange_from_last'] = sprintf("%.04f", $input_params['exchange_from_last']);
+			$input_params['exchange_to_last'] = sprintf("%.04f", $input_params['exchange_to_last']);
 			/*
 			if (($input_params['exchange_from_max'] > 0) && ($input_params['exchange_to_max'] > 0)) {
 				$return_int = ($input_params['exchange_from_max'] / $input_params['exchange_to_max']);
@@ -419,15 +419,15 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 				//$return_int = sprintf("%.02f", $return_int);
 			}
 			*/
-			if (($input_params['exchange_from_last'] > 0.00000000) && ($input_params['exchange_to_last'] > 0.00000000)) {
+			if (($input_params['exchange_from_last'] > 0.0000) && ($input_params['exchange_to_last'] > 0.0000)) {
 				$return_int = ($input_params['exchange_from_last'] / $input_params['exchange_to_last']);
-				$return_int = sprintf("%.08f", $return_int);
+				$return_int = sprintf("%.04f", $return_int);
 			}
 		}
 		if ($return_int > 0) {
 			$return_int = (1 - $return_int);
 		}
-		return sprintf("%.08f", $return_int);
+		return sprintf("%.04f", $return_int);
 	}
 	function get_enabled_comparison() {
 		return $this->mod_cli->get_enabled_ticker_comparison(1);
