@@ -531,7 +531,7 @@ class Model_currencies extends CI_Model {
 	}
 	//------------------
 	// Insert ticker data
-	function insert_ticker_amount_by_tickerseq($ticker_seq, $ticker_amount = '') {
+	function insert_ticker_amount_by_tickerseq($ticker_seq, $ticker_amount = '', $ticker_raw_json = '') {
 		$ticker_seq = (is_numeric($ticker_seq) ? (int)$ticker_seq : 0);
 		$ticker_amount = (is_string($ticker_amount) || is_numeric($ticker_amount)) ? sprintf("%s", $ticker_amount) : '';
 		$sql = sprintf("INSERT INTO %s(ticker_seq, item_date, item_datetime, item_amount) VALUES('%d', CURDATE(), NOW(), '%s')",
@@ -540,7 +540,23 @@ class Model_currencies extends CI_Model {
 			$this->db_cryptocurrency->escape_str($ticker_amount)
 		);
 		$this->db_cryptocurrency->query($sql);
-		return $this->db_cryptocurrency->affected_rows();
+		$new_insert_seq = $this->db_cryptocurrency->insert_id();
+		if ((int)$new_insert_seq > 0) {
+			if (!empty($ticker_raw_json) && ($ticker_raw_json != '')) {
+				$ticker_raw_json = (is_string($ticker_raw_json) ? $ticker_raw_json : '');
+				$raw_params = array(
+					'data_seq'			=> $new_insert_seq,
+					'data_logtime'		=> $this->DateObject->format('Y-m-d H:i:s'),
+					'data_raw'			=> $ticker_raw_json,
+				);
+				$this->db_cryptocurrency->insert('cryptocurrency_tickers_data_logs', $raw_params);
+			}
+		}
+		
+		
+		
+		
+		return $new_insert_seq;
 	}
 	
 	
