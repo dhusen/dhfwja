@@ -146,7 +146,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 								$collectData['ticker_api_amount'] = sprintf('%s', $tickerVal['api_response']['ticker'][$market_price_index]);
 							}
 							// === Insert to Database
-							$affected_seq_insert_ticker_data = $this->mod_currency->insert_ticker_amount_by_tickerseq($tickerVal['data']->seq, $collectData['ticker_api_amount']);
+							$affected_seq_insert_ticker_data = $this->mod_currency->insert_ticker_amount_by_tickerseq($tickerVal['data']->seq, $collectData['ticker_api_amount'], $tickerVal);
 						}
 					}
 				break;
@@ -160,7 +160,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 								$collectData['ticker_api_amount'] = sprintf('%s', $tickerVal['api_response']['result'][$ticker_imploded][$market_price_index][0]);
 							}
 							// === Insert to Database
-							$affected_seq_insert_ticker_data = $this->mod_currency->insert_ticker_amount_by_tickerseq($tickerVal['data']->seq, $collectData['ticker_api_amount']);
+							$affected_seq_insert_ticker_data = $this->mod_currency->insert_ticker_amount_by_tickerseq($tickerVal['data']->seq, $collectData['ticker_api_amount'], $tickerVal);
 						}
 					}
 				break;
