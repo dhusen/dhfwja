@@ -419,7 +419,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 				//$return_int = sprintf("%.02f", $return_int);
 			}
 			*/
-			if (($input_params['exchange_from_last'] > 0) && ($input_params['exchange_to_last'] > 0)) {
+			if (($input_params['exchange_from_last'] > 0.00000000) && ($input_params['exchange_to_last'] > 0.00000000)) {
 				$return_int = ($input_params['exchange_from_last'] / $input_params['exchange_to_last']);
 				$return_int = sprintf("%.08f", $return_int);
 			}
@@ -427,7 +427,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 		if ($return_int > 0) {
 			$return_int = (1 - $return_int);
 		}
-		return $return_int;
+		return sprintf("%.08f", $return_int);
 	}
 	function get_enabled_comparison() {
 		return $this->mod_cli->get_enabled_ticker_comparison(1);
