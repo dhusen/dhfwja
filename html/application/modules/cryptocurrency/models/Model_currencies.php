@@ -533,7 +533,9 @@ class Model_currencies extends CI_Model {
 	// Insert ticker data
 	function insert_ticker_amount_by_tickerseq($ticker_seq, $ticker_amount = '', $raw = array()) {
 		$ticker_seq = (is_numeric($ticker_seq) ? (int)$ticker_seq : 0);
-		$ticker_amount = (is_string($ticker_amount) || is_numeric($ticker_amount)) ? sprintf("%s", $ticker_amount) : '';
+		if (is_string($ticker_amount) || is_numeric($ticker_amount)) {
+			$ticker_amount = sprintf("%s", $ticker_amount);
+		}
 		$sql = sprintf("INSERT INTO %s(ticker_seq, item_date, item_datetime, item_amount) VALUES('%d', CURDATE(), NOW(), '%s')",
 			$this->cryptocurrency_tables['ticker_data'],
 			$this->db_cryptocurrency->escape_str($ticker_seq),

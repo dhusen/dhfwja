@@ -147,9 +147,9 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 			$collectData['ticker_api_amount'] = '0';
 			switch (strtolower($collectData['market_data']->market_code)) {
 				case 'bitcoin_id':
-					$market_price_index = $collectData['market_data']->market_price_index;
-					if (count($collectData['collect']['tickers']) > 0) {
+					if (is_array($collectData['collect']['tickers']) && (count($collectData['collect']['tickers']) > 0)) {
 						foreach ($collectData['collect']['tickers'] as $tickerKey => $tickerVal) {
+							$market_price_index = (isset($collectData['market_data']->market_price_index) ? $collectData['market_data']->market_price_index : time());
 							if (isset($tickerVal['api_response']['ticker'][$market_price_index])) {
 								$collectData['ticker_api_amount'] = sprintf('%s', $tickerVal['api_response']['ticker'][$market_price_index]);
 							}
@@ -160,12 +160,14 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 				break;
 				case 'kraken':
 				default:
-					$market_price_index = $collectData['market_data']->market_price_index;
-					if (count($collectData['collect']['tickers']) > 0) {
+					if (is_array($collectData['collect']['tickers']) && (count($collectData['collect']['tickers']) > 0)) {
 						foreach ($collectData['collect']['tickers'] as $tickerKey => $tickerVal) {
-							$ticker_imploded = (isset($tickerVal['ticker_imploded']) ? $tickerVal['ticker_imploded'] : '');
-							if (isset($tickerVal['api_response']['result'][$ticker_imploded][$market_price_index][0])) {
-								$collectData['ticker_api_amount'] = sprintf('%s', $tickerVal['api_response']['result'][$ticker_imploded][$market_price_index][0]);
+							$market_price_index = (isset($collectData['market_data']->market_price_index) ? $collectData['market_data']->market_price_index : time());
+							if (isset($tickerVal['ticker_imploded'])) {
+								$ticker_imploded = $tickerVal['ticker_imploded'];
+								if (isset($tickerVal['api_response']['result'][$ticker_imploded][$market_price_index][0])) {
+									$collectData['ticker_api_amount'] = sprintf('%s', $tickerVal['api_response']['result'][$ticker_imploded][$market_price_index][0]);
+								}
 							}
 							// === Insert to Database
 							$affected_seq_insert_ticker_data = $this->mod_currency->insert_ticker_amount_by_tickerseq($tickerVal['data']->seq, $collectData['ticker_api_amount'], $tickerVal);
