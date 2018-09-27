@@ -542,14 +542,16 @@ class Model_currencies extends CI_Model {
 		$this->db_cryptocurrency->query($sql);
 		$new_insert_seq = $this->db_cryptocurrency->insert_id();
 		if ((int)$new_insert_seq > 0) {
-			if (!empty($ticker_raw_json) && ($ticker_raw_json != '')) {
-				$ticker_raw_json = (is_string($ticker_raw_json) ? $ticker_raw_json : '');
-				$raw_params = array(
-					'data_seq'			=> $new_insert_seq,
-					'data_logtime'		=> $this->DateObject->format('Y-m-d H:i:s'),
-					'data_raw'			=> $ticker_raw_json,
-				);
-				$this->db_cryptocurrency->insert('cryptocurrency_tickers_data_logs', $raw_params);
+			$ticker_raw_json = (is_string($ticker_raw_json) ? $ticker_raw_json : '');
+			$raw_params = array(
+				'data_seq'			=> $new_insert_seq,
+				'data_logtime'		=> $this->DateObject->format('Y-m-d H:i:s'),
+				'data_raw'			=> $ticker_raw_json,
+			);
+			try {
+				$sql_query = $this->db_cryptocurrency->insert('cryptocurrency_tickers_data_logs', $raw_params);
+			} catch (Exception $ex) {
+				exit("Cannot insert log ticker data seq: " . $ex->getMessage());
 			}
 		}
 		
