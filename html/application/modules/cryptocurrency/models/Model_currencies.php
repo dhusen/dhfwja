@@ -535,7 +535,12 @@ class Model_currencies extends CI_Model {
 		$ticker_seq = (is_numeric($ticker_seq) ? (int)$ticker_seq : 0);
 		if (is_string($ticker_amount) || is_numeric($ticker_amount)) {
 			$ticker_amount = sprintf("%s", $ticker_amount);
+		} else {
+			$ticker_amount = '0';
 		}
+		
+		
+		
 		$sql = sprintf("INSERT INTO %s(ticker_seq, item_date, item_datetime, item_amount) VALUES('%d', CURDATE(), NOW(), '%s')",
 			$this->cryptocurrency_tables['ticker_data'],
 			$this->db_cryptocurrency->escape_str($ticker_seq),
