@@ -279,7 +279,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 		}
 		if (!$this->error) {
 			if (count($collectData['collect']['ticker_data_collection']['from']) > 0) {
-				foreach ($collectData['collect']['ticker_data_collection']['from'] as $FromKey => &$FromCollectVal) {
+				foreach ($collectData['collect']['ticker_data_collection']['from'] as $FromKey => $FromCollectVal) {
 					$FromCollectVal['exchange'] = array(
 						'min_amount'			=> round(sprintf("%.08f", ($FromCollectVal['result']->min_amount * $collectData['today_exchange']->exchange_amount_to)), 2, PHP_ROUND_HALF_ODD),
 						'max_amount'			=> round(sprintf("%.08f", ($FromCollectVal['result']->max_amount * $collectData['today_exchange']->exchange_amount_to)), 2, PHP_ROUND_HALF_ODD),
