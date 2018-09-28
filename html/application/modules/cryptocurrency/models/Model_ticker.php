@@ -267,7 +267,7 @@ class Model_ticker extends CI_Model {
 				$tlVal['result'] = $sql_query->row();
 				$tlVal['result']->last_amount = 0;
 				if (isset($tlVal['result']->last_seq)) {
-					$sql = sprintf("SELECT CAST(t.item_amount AS DECIMAL(20,8)) AS last_amount FROM %s WHERE (t.ticker_seq = '%d' AND t.item_date = '%s') AND (DATE_FORMAT(t.item_datetime, '%%Y-%%m-%%d %%H:%%i') BETWEEN '%s' AND '%s') ORDER BY t.item_datetime DESC LIMIT 1",
+					$sql = sprintf("SELECT CAST(t.item_amount AS DECIMAL(20,8)) AS last_amount FROM %s AS t WHERE (t.ticker_seq = '%d' AND t.item_date = '%s') AND (DATE_FORMAT(t.item_datetime, '%%Y-%%m-%%d %%H:%%i') BETWEEN '%s' AND '%s') ORDER BY t.item_datetime DESC LIMIT 1",
 						$this->cryptocurrency_tables['ticker_data'],
 						$this->db_cryptocurrency->escape_str($ticker_seq),
 						$this->db_cryptocurrency->escape_str($date),
