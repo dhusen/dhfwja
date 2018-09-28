@@ -279,15 +279,19 @@ class Model_ticker extends CI_Model {
 					} catch (Exception $ex) {
 						exit("Cannot query for get last-amount of ticker: {$sql}");
 					}
-					$tmp_last_amount = $sql_query->row()->last_amount;
-										
+					$tmp_last_amount = 0;
+					$row = $sql_query->row();
+					if ($row != false) {
+						$tmp_last_amount = $row->last_amount;
+					}
+	
 					
 					$last_amount = $this->db_cryptocurrency->select('CAST(item_amount AS DECIMAL(20,8)) AS last_item_amount')->from($this->cryptocurrency_tables['ticker_data'])->where('seq', $tlVal['result']->last_seq)->get()->row();
 					if (isset($last_amount->last_item_amount)) {
 						$tlVal['result']->last_amount = $last_amount->last_item_amount;
 					}
 					if ((int)$tlVal['result']->last_amount == 0) {
-						$tlVal['result']->last_amount = sprintf("%d", $tmp_last_amount);
+						$tlVal['result']->last_amount = sprintf("%.08f", $tmp_last_amount);
 					}
 				}
 			}
