@@ -277,7 +277,7 @@ class Model_ticker extends CI_Model {
 					try {
 						$sql_query = $this->db_cryptocurrency->query($sql);
 					} catch (Exception $ex) {
-						exit("Cannot query for get last-amount of ticker.");
+						exit("Cannot query for get last-amount of ticker: {$sql}");
 					}
 					$tmp_last_amount = $sql_query->row()->last_amount;
 										
