@@ -265,15 +265,30 @@ class Model_ticker extends CI_Model {
 					$tlVal['result'] = FALSE;
 				}
 				$tlVal['result'] = $sql_query->row();
+				$tlVal['result']->last_amount = 0;
 				if (isset($tlVal['result']->last_seq)) {
+					$sql = sprintf("SELECT CAST(t.item_amount AS DECIMAL(20,8)) AS last_amount FROM %s WHERE (t.ticker_seq = '%d' AND t.item_date = '%s') AND (DATE_FORMAT(t.item_datetime, '%%Y-%%m-%%d %%H:%%i') BETWEEN '%s' AND '%s') ORDER BY t.item_datetime DESC LIMIT 1",
+						$this->cryptocurrency_tables['ticker_data'],
+						$this->db_cryptocurrency->escape_str($ticker_seq),
+						$this->db_cryptocurrency->escape_str($date),
+						$this->db_cryptocurrency->escape_str($tlVal['starting']),
+						$this->db_cryptocurrency->escape_str($tlVal['stopping'])
+					);
+					try {
+						$sql_query = $this->db_cryptocurrency->query($sql);
+					} catch (Exception $ex) {
+						exit("Cannot query for get last-amount of ticker.");
+					}
+					$tmp_last_amount = $sql_query->row()->last_amount;
+										
+					
 					$last_amount = $this->db_cryptocurrency->select('CAST(item_amount AS DECIMAL(20,8)) AS last_item_amount')->from($this->cryptocurrency_tables['ticker_data'])->where('seq', $tlVal['result']->last_seq)->get()->row();
 					if (isset($last_amount->last_item_amount)) {
 						$tlVal['result']->last_amount = $last_amount->last_item_amount;
-					} else {
-						$tlVal['result']->last_amount = (isset($tlVal['result']->max_amount) ? $tlVal['result']->max_amount : 0);
 					}
-				} else {
-					$tlVal['result']->last_amount = (isset($tlVal['result']->max_amount) ? $tlVal['result']->max_amount : 0);
+					if ((int)$tlVal['result']->last_amount == 0) {
+						$tlVal['result']->last_amount = sprintf("%d", $tmp_last_amount);
+					}
 				}
 			}
 		}
