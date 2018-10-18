@@ -509,6 +509,7 @@ class Cryptocurrency_ticker_data_update extends MY_Controller {
 	// Delete data of more than 30 days
 	function delete_data_scheduler() {
 		$this->mod_cli->usp_delete_ticker_data30days();
+		$this->mod_cli->usp_delete_ticker_logs_everyday();
 	}
 	
 	
